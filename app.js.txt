@@ -1,0 +1,29 @@
+var stage = new Konva.Stage({
+  container: 'container',
+  width: 800,
+  height: 600
+});
+
+var layer = new Konva.Layer();
+stage.add(layer);
+
+document.getElementById('upload').addEventListener('change', function(e) {
+  var file = e.target.files[0];
+  var reader = new FileReader();
+
+  reader.onload = function(evt) {
+    var img = new Image();
+    img.src = evt.target.result;
+    img.onload = function() {
+      var konvaImg = new Konva.Image({
+        x: 200,
+        y: 200,
+        image: img,
+        draggable: true
+      });
+      layer.add(konvaImg);
+      layer.draw();
+    };
+  };
+  reader.readAsDataURL(file);
+});
