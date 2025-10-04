@@ -7,6 +7,9 @@ var stage = new Konva.Stage({
 var layer = new Konva.Layer();
 stage.add(layer);
 
+var images = []; // Store all Konva images
+
+// Upload & show image
 document.getElementById('upload').addEventListener('change', function(e) {
   var file = e.target.files[0];
   var reader = new FileReader();
@@ -23,7 +26,39 @@ document.getElementById('upload').addEventListener('change', function(e) {
       });
       layer.add(konvaImg);
       layer.draw();
+      images.push(konvaImg); // Save reference
     };
   };
   reader.readAsDataURL(file);
+});
+
+// Save Rig as JSON
+document.getElementById('save').addEventListener('click', function() {
+  var rigData = images.map(img => ({
+    x: img.x(),
+    y: img.y(),
+    rotation: img.rotation(),
+    width: img.width(),
+    height: img.height(),
+    src: img.image().src
+  }));
+  
+  var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(rigData));
+  var downloadAnchorNode = document.createElement('a');
+  downloadAnchorNode.setAttribute("href", dataStr);
+  downloadAnchorNode.setAttribute("download", "rig.json");
+  document.body.appendChild(downloadAnchorNode);
+  downloadAnchorNode.click();
+  downloadAnchorNode.remove();
+});
+
+// Export canvas as PNG
+document.getElementById('export').addEventListener('click', function() {
+  var dataURL = stage.toDataURL({ pixelRatio: 2 });
+  var downloadAnchorNode = document.createElement('a');
+  downloadAnchorNode.setAttribute("href", dataURL);
+  downloadAnchorNode.setAttribute("download", "rig.png");
+  document.body.appendChild(downloadAnchorNode);
+  downloadAnchorNode.click();
+  downloadAnchorNode.remove();
 });
